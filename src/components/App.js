@@ -1,26 +1,29 @@
-import React, {useState} from 'react'
-import './App.css';
-import Home from './main/Home'
+import React, {useState} from "react";
+import { BrowserRouter as Router, Route } from "react-router-dom";
+import PrivateRoute from './auth/PrivateRoutes';
+import Home from './main/Home';
 import Login from './auth/Login'
-import { BrowserRouter, Route, Switch } from 'react-router-dom'
+import { AuthContext } from "../context/Context";
+import Register from "./auth/Register";
 
+function App(props) {
+  const existingTokens = JSON.parse(localStorage.getItem("tokens"));
+  const [authTokens, setAuthTokens] = useState(existingTokens);
 
-function App() {
-  const [token, setToken] = useState()
-
-  if(!token) {
-    return <Login setToken={setToken} />
+  const setTokens = (data) => {
+    localStorage.setItem("tokens", JSON.stringify(data));
+    setAuthTokens(data);
   }
 
-    return (
-      <BrowserRouter>
-      <Switch>
-        <Route path="/home">
-          <Home />
-        </Route>
-      </Switch>
-    </BrowserRouter>
-  )
+  return (
+    <AuthContext.Provider value={{ authTokens, setAuthTokens: setTokens }}>
+      <Router>
+        <Route exact path="/login" component={Login} />
+        <Route exact path="/register" component={Register} />
+        <PrivateRoute path="/" component={Home} />
+      </Router>
+    </AuthContext.Provider>
+  );
 }
 
 export default App;
