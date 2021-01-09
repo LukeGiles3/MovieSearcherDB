@@ -1,28 +1,18 @@
-import React, {useState} from "react";
+import React from "react";
 import { BrowserRouter as Router, Route } from "react-router-dom";
-import PrivateRoute from './auth/PrivateRoutes';
 import Home from './main/Home';
 import Login from './auth/Login'
-import { AuthContext } from "../context/Context";
 import Register from "./auth/Register";
 
-function App(props) {
-  const existingTokens = JSON.parse(localStorage.getItem("tokens"));
-  const [authTokens, setAuthTokens] = useState(existingTokens);
-
-  const setTokens = (data) => {
-    localStorage.setItem("tokens", JSON.stringify(data));
-    setAuthTokens(data);
-  }
-
+function App() {
+  const user = null;
   return (
-    <AuthContext.Provider value={{ authTokens, setAuthTokens: setTokens }}>
+    user ? 
+      <Home path="/home"/> :
       <Router>
-        <Route exact path="/login" component={Login} />
+        <Route exact path="/" component={Login} />
         <Route exact path="/register" component={Register} />
-        <PrivateRoute path="/" component={Home} />
       </Router>
-    </AuthContext.Provider>
   );
 }
 
