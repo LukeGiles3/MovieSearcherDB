@@ -2,14 +2,18 @@ import React, { useState } from "react";
 import "semantic-ui-css/semantic.min.css";
 import "../App.css";
 import { Card, Form, Button, Icon } from "semantic-ui-react";
-import { Link } from "react-router-dom";
+import { Link } from "@reach/router";
+import {signInWithGoogle, auth} from "../../firebase";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState(null);
+
   const signInWithEmailAndPasswordHandler = (event, email, password) => {
     event.preventDefault();
+    auth.signInWithEmailAndPassword(email, password).catch(error => {
+      console.error("Error signing in with password and email", error);
+    });
   };
   const onChangeHandler = (event) => {
     const { name, value } = event.currentTarget;
@@ -64,6 +68,15 @@ export default function Login() {
                 }}
               >
                 Submit
+              </Button>
+              <Button
+                onClick={() => {
+                  signInWithGoogle();
+                }}
+                fluid
+                color="google plus"
+              >
+                <Icon name="google plus g" /> Login with Google+
               </Button>
             </Form>
           </Card.Description>

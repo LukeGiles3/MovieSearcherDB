@@ -1,20 +1,30 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 import "semantic-ui-css/semantic.min.css";
 import "../App.css";
 import { Card, Form, Button, Icon } from "semantic-ui-react";
-import { Link } from "react-router-dom";
+import { Link } from "@reach/router";
+import { auth, signInWithGoogle, generateUserDocument } from "../../firebase";
 
 export default function Register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [username, setUsername] = useState("");
-  const [error, setError] = useState(null);
-  const createUserWithEmailAndPasswordHandler = (event, email, password) => {
+  const [username, setUsername] = useState("");  
+
+  const createUserWithEmailAndPasswordHandler = async (event, email, password) => {
     event.preventDefault();
+    try{
+      const {user} = await auth.createUserWithEmailAndPassword(email, password);
+      generateUserDocument(user, {username});
+    }
+    catch(error){
+      console.error('an error occurred')
+    }
+
     setEmail("");
     setPassword("");
     setUsername("");
   };
+
   const onChangeHandler = (event) => {
     const { name, value } = event.currentTarget;
     if (name === "email") {
@@ -23,7 +33,7 @@ export default function Register() {
       setPassword(value);
     } else if (name === "username") {
       setUsername(value);
-    }
+    } 
   };
   return (
     <div className="card">
@@ -69,7 +79,7 @@ export default function Register() {
                 />
               </Form.Field>
               <p>
-                Already have an account? Login <Link to="/login">here</Link>
+                Already have an account? Login <Link to="/">here</Link>
               </p>
               <Button
                 fluid
@@ -80,6 +90,15 @@ export default function Register() {
                 }}
               >
                 Submit
+              </Button>
+              <Button
+                onClick={() => {
+                  signInWithGoogle();
+                }}
+                fluid
+                color="google plus"
+              >
+                <Icon name="google plus g" /> Register with Google+
               </Button>
             </Form>
           </Card.Description>
